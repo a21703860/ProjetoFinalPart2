@@ -142,6 +142,7 @@ class MapFragment : Fragment() {
             else -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
         }
     }
+    @SuppressLint("MissingPermission")
     private fun zoomToCurrentLocation() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
