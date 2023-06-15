@@ -81,11 +81,53 @@ abstract class ObjetoFilme {
         return cinemas
     }
 
+    private fun lerCinemasFromJson(context: Context?): List<CinemaCodigo> {
+        val cinemas = mutableListOf<CinemaCodigo>()
+
+        try {
+            val inputStream = context?.assets?.open("cinemas.json")
+            val size = inputStream?.available()
+            val buffer = ByteArray(size!!)
+            inputStream.read(buffer)
+            inputStream.close()
+
+            val json = String(buffer, Charsets.UTF_8)
+            val jsonObject = JSONObject(json)
+            val cinemasArray = jsonObject.getJSONArray("cinemas")
+
+            for (i in 0 until cinemasArray.length()) {
+                val cinemaObject = cinemasArray.getJSONObject(i)
+                val cinemaName = cinemaObject.getString("cinema_name")
+                val cinemaLat = cinemaObject.getDouble("latitude")
+                val cinemaLong = cinemaObject.getDouble("longitude")
+                val codigo =cinemaObject.getString("postcode")
+                val fotos=cinemaObject.getJSONArray("photos")
+                    for(i in 0 until fotos.length()){
+
+                    }
+                val cinemaCodigo=CinemaCodigo(cinemaName, cinemaLat, cinemaLong,codigo)
+                cinemas.add(cinemaCodigo)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return cinemas
+    }
+
     data class Cinema(val name: String, val latitude: Double, val longitude: Double)
+    data class CinemaCodigo(val name: String, val latitude: Double, val longitude: Double, val codigo:String)
 
 
     fun verificarCinemaExiste(nome: String, context: Context?): Pair<Boolean, Cinema?> {
         val cinemas = readCinemasFromJson(context)
+        val cinema = cinemas.find { it.name == nome }
+        val existe = cinema != null
+        return Pair(existe, cinema)
+    }
+
+    fun verCodigo(nome: String, context: Context?): Pair<Boolean, CinemaCodigo?> {
+        val cinemas = lerCinemasFromJson(context)
         val cinema = cinemas.find { it.name == nome }
         val existe = cinema != null
         return Pair(existe, cinema)
@@ -118,5 +160,4 @@ abstract class ObjetoFilme {
     }
 
     abstract fun insertFilms(films: List<FilmeApi>, onFinished: () -> Unit)
-
 }

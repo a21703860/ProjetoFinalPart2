@@ -1,6 +1,7 @@
 package com.example.projetofinalpart1.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,20 +16,24 @@ import com.example.projetofinalpart1.data.FilmsDatabase
 import com.example.projetofinalpart1.databinding.FragmentDetalhesBinding
 import com.example.projetofinalpart1.model.Filme
 import com.example.projetofinalpart1.model.FilmeDashboard
+import com.example.projetofinalpart1.model.ObjetoFilme
 import kotlinx.coroutines.*
 
 private const val ARG_FILME_UUID = "ARG_FILME_UUID"
+private const val VEIO = "VEIO"
 
 class DetalhesFragment : Fragment() {
 
     private lateinit var binding: FragmentDetalhesBinding
     private var filmeUuid: String? = null
+    private var veio: String? = null
     private lateinit var objetoFilme: FilmeRoom
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             filmeUuid = it.getString(ARG_FILME_UUID)
+            veio= it.getString(VEIO)
         }
     }
 
@@ -51,6 +56,7 @@ class DetalhesFragment : Fragment() {
         binding.avaliacao.isEnabled = false
         binding.dataVisualizacao.isEnabled = false
         binding.observacoes.isEnabled = false
+        binding.listaoumapa.text=veio
 
         CoroutineScope(Dispatchers.Main).launch {
             filmeUuid?.let { uuid ->
@@ -253,10 +259,11 @@ class DetalhesFragment : Fragment() {
     }
     companion object {
         @JvmStatic
-        fun newInstance(uuid: String) =
+        fun newInstance(uuid: String, veio:String) =
             DetalhesFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_FILME_UUID, uuid)
+                    putString(VEIO,veio)
                 }
             }
     }

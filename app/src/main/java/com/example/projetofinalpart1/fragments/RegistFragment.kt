@@ -170,6 +170,8 @@ class RegistFragment : Fragment() {
                     updateLable()
                 }
             }
+            val minDate = Calendar.getInstance()
+            minDate.add(Calendar.DAY_OF_MONTH, -2)
             val dialog = DatePickerDialog(
                 requireContext(),
                 datePicker,
@@ -178,6 +180,7 @@ class RegistFragment : Fragment() {
                 objetoFilme.calendario.get(Calendar.DAY_OF_MONTH)
             )
             dialog.datePicker.maxDate = hoje.timeInMillis
+            dialog.datePicker.minDate= minDate.timeInMillis
             dialog.show()
             binding.dataEditText.error = null
         }

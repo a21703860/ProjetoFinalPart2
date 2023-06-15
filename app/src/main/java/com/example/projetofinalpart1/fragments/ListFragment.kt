@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.projetofinalpart1.NavigationManager
 import com.example.projetofinalpart1.R
 import com.example.projetofinalpart1.data.FilmeRepository
+import com.example.projetofinalpart1.data.FilmeRoom
+import com.example.projetofinalpart1.data.FilmsDatabase
 import com.example.projetofinalpart1.databinding.DialogLayoutBinding
 import com.example.projetofinalpart1.databinding.FragmentListBinding
 import com.example.projetofinalpart1.model.Filme
@@ -28,6 +30,7 @@ class ListFragment : Fragment() {
     private lateinit var binding: FragmentListBinding
     private val filmList = mutableListOf<Filme>()
     private val filteredFilmList = mutableListOf<Filme>()
+    private lateinit var objetoFilme: FilmeRoom
 
     private val REQUEST_CODE_SPEECH_INPUT = 100
     val repository = FilmeRepository.getInstance()
@@ -45,9 +48,10 @@ class ListFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        objetoFilme = FilmeRoom(FilmsDatabase.getInstance(requireContext()).filmDao())
+
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
-
         CoroutineScope(Dispatchers.IO).launch {
             repository.getFilmList { result ->
                 if (result.isSuccess) {
@@ -102,7 +106,7 @@ class ListFragment : Fragment() {
     }
 
     private fun onOperationClick(uuid: String) {
-        NavigationManager.goToDetalhesFragment(parentFragmentManager, uuid)
+        NavigationManager.goToDetalhesFragment(parentFragmentManager, uuid,"Lista")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

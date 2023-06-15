@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projetofinalpart1.data.ConnectivityUtil
+import com.example.projetofinalpart1.data.FilmeRoom
+import com.example.projetofinalpart1.data.FilmsDatabase
 import com.example.projetofinalpart1.databinding.FilmeItemBinding
 import com.example.projetofinalpart1.model.Filme
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +28,7 @@ class FilmeAdapter(
     private val onClick: (String) -> Unit,
     private var items: List<Filme> = listOf()
 ) : RecyclerView.Adapter<FilmeAdapter.FilmeViewHolder>() {
+    private lateinit var objetoFilme: FilmeRoom
 
     class FilmeViewHolder(val binding: FilmeItemBinding) : RecyclerView.ViewHolder(binding.root){
         val movieImage:ImageView=binding.filmeFotografiaImageView
@@ -40,6 +44,7 @@ class FilmeAdapter(
     }
 
     override fun onBindViewHolder(holder: FilmeViewHolder, position: Int) {
+        objetoFilme = FilmeRoom(FilmsDatabase.getInstance(holder.itemView.context).filmDao())
         val orientation = holder.itemView.context.resources.configuration.orientation
         holder.itemView.setOnClickListener { onClick(items[position].imdbID) }
         holder.binding.nomeFilmeEditText.text = items[position].title
@@ -48,6 +53,9 @@ class FilmeAdapter(
         holder.binding.dataEditText.text = items[position].userDate
         holder.binding.observacoesEditText.text = items[position].userObservations
         val url = items[position].poster
+        val (existe, cinema) = objetoFilme.verCodigo(items[position].userCinema, holder.itemView.context)
+        holder.binding.dataEditText.text = cinema?.codigo
+
         CoroutineScope(Dispatchers.Main).launch {
             val bitmap = getBitmapFromURL(holder.movieImage.context, url)
             if (bitmap != null) {
